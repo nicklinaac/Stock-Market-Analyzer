@@ -6,10 +6,15 @@ from pathlib import Path
 from ta.momentum import RSIIndicator
 from ta.trend import SMAIndicator
 
-csv_path = os.path.join("data", "symbols_valid_meta.csv")
 
-# Load the CSV file
-df = pd.read_csv(csv_path)
+def main():
+    """Main function to fetch and analyze stock data."""
+    csv_path = os.path.join("data", "symbols_valid_meta.csv")
+    df = pd.read_csv(csv_path)
+    input_ticker = input("Enter the ticker symbol (e.g., AAPL, NVDA, FB, etc.): ").strip().upper()
+    input_timeline = input("Enter time period (e.g. 1mo, 6mo, 1y) or press ENTER for DEFAULT (3mo): ").strip()
+    fetch_and_analyze(df,ticker_symbol=input_ticker, timeline=input_timeline)
+    
 
 def display_data(ticker_symbol, company_name,historical_data: pd.DataFrame) -> None:
     """Display the historical data in a readable format."""
@@ -41,8 +46,10 @@ def display_data(ticker_symbol, company_name,historical_data: pd.DataFrame) -> N
     plt.show()
 
 
-def fetch_and_analyze(ticker_symbol: str, timeline: str) -> None:
+def fetch_and_analyze(df,ticker_symbol: str, timeline: str) -> None:
     try:
+        if df.empty:
+            raise ValueError("The metadata DataFrame is empty. Please check the CSV file.")
         if not ticker_symbol:
             raise ValueError("Ticker symbol cannot be empty.")
         if ticker_symbol not in df["Symbol"].values:
@@ -92,7 +99,5 @@ def fetch_and_analyze(ticker_symbol: str, timeline: str) -> None:
 
 
 if __name__ == "__main__":
-    input_ticker = input("Enter the ticker symbol (e.g., AAPL, NVDA, FB, etc.): ").strip().upper()
-    input_timeline = input("Enter the timeline (e.g.1mo, 1y, ytd, max, etc.) or press ENTER for DEFAULT (3mo): ").strip()
-    fetch_and_analyze(ticker_symbol=input_ticker, timeline=input_timeline)
- 
+    main()
+# Ensure the script runs only when executed directly
